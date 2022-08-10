@@ -1,30 +1,28 @@
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
-class ContactForm extends Component{
-    state = {
-        name: '',
-        number: ''
-    };
+export default function ContactForm({onSubmit}) {
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
 
-    onInputChange = e => {
-        const { name, value } = e.currentTarget;
-            this.setState({[name] : value})
-    };
 
-    onSubmitForm = e => {
+    const onInputNameChange = e => {
+        setName(e.currentTarget.value);
+    };
+    const onInputNumberChange = e => {
+        setNumber(e.currentTarget.value);
+    };
+  
+
+    const onSubmitForm = e => {
         e.preventDefault();
-        this.props.onSubmit(this.state);
-        this.reset()
+        onSubmit({name, number});
+        setName('');
+        setNumber('');
     };
 
-    reset = () => {
-        this.setState({name: '',
-        number: ''})
-    };
-
-    render() {
-        return (<Form onSubmit={this.onSubmitForm}>
+    return (<Form onSubmit={onSubmitForm}>
                     <Label>Name
                     <Input
                         type="text"
@@ -32,8 +30,8 @@ class ContactForm extends Component{
                         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                         required
-                        value={this.state.name}
-                        onChange={this.onInputChange}
+                        value={name}
+                        onChange={onInputNameChange}
                         />
                     </Label>
                     <Label>Number
@@ -43,13 +41,12 @@ class ContactForm extends Component{
                         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                         required
-                            value={this.state.number}
-                            onChange={this.onInputChange}
+                            value={number}
+                            onChange={onInputNumberChange}
                         />
                         </Label>                    
                     <Btn type="submit">Add contact</Btn>
                 </Form>);
-    }
 };
 
 const Form = styled.form`
@@ -82,5 +79,5 @@ const Btn = styled.button`
   background-color: greenyellow;
 }`;
 
-export default ContactForm;
+
 
