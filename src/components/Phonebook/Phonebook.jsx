@@ -7,14 +7,13 @@ import styled from 'styled-components';
 import shortid from 'shortid';
 
 
+
 export default function Phonebook() {
     const [contacts, setContacts] = useLocalStorage('contacts', []);
     const [filter, setFilter] = useState('');
 
-    const addContact = ({ name, number }) => {
-    
+    const addContact = ({ name, number }) => {    
     const isContact = contacts.find(contact => contact.name === name);
-
     if (isContact) {
       alert(`${name} is already in contact`);
       // try with ternarnuy operator
