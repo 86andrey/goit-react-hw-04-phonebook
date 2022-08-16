@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import { useState, useEffect} from 'react';
+import useLocalStorage from 'hooks/localStorage';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
@@ -6,85 +7,77 @@ import styled from 'styled-components';
 import shortid from 'shortid';
 
 
-class Phonebook extends Component {
-    state = {
-        contacts: [
-            {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-            {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-            {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-            {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-        ],  
-        filter: ''
-    };
+export default function Phonebook() {
+    const [contacts, setContacts] = useLocalStorage('contacts', []);
+    const [filter, setFilter] = useState('');
 
-    generateIdContact = shortid.generate();
+    const addContact = ({ name, number }) => {
+    
+    const isContact = contacts.find(contact => contact.name === name);
 
-    addContact = ({ name, number }) => {
-    this.setState(({ contacts }) => {
-      const isContact = contacts.find(contact => contact.name === name);
-
-      if (isContact) {
-        alert(`${name} is already in contact`);
-        return contacts;
-      } else {
-        const newContact = {
-        id: this.generateIdContact,
+    if (isContact) {
+      alert(`${name} is already in contact`);
+      // try with ternarnuy operator
+      setContacts(contacts);
+    } else {
+      setContacts([
+        {
+        id: shortid.generate(),
         name,
         number,
-      };
-        return {
-          contacts: [newContact, ...contacts],
-        };
-      }
-    });
+        },
+        ...contacts,])
+    };
   };
 
-    deleteContact = (contactId) => {
-        this.setState(prevState => ({
-            contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-        }))
+  const deleteContact = (contactId) => {
+      // just make with contact
+      setContacts(prevContacts => (
+        prevContacts.filter(contact => contact.id !== contactId)
+      ));
     }; 
 
-    onChangeFilter = (e) => {
-        this.setState({ filter: e.currentTarget.value });
+    const onChangeFilter = (e) => {
+        setFilter(e.currentTarget.value);
     };
 
-    getVisibleContact = () => {
-        const { contacts, filter } = this.state;
+    const getVisibleContact = () => {
         const normalizedFilter = filter.toLowerCase();
-        return contacts.filter(contact =>
-            contact.name.toLowerCase().includes(normalizedFilter));
-    };
-
-  componentDidMount() {
-    // вызывается один раз при монтировании компонента
+      return contacts
+      .map(
+        contact =>
+          contact.name.toLowerCase().includes(normalizedFilter) && contact
+      )
+      .filter(contact => contact !== false);
+      
+      
+      // contacts.filter(contact =>
+      //       contact.name.toLowerCase().includes(normalizedFilter));
+  };
+  
+ useEffect(() => {
+    // в классах это componentDidMount
     const contacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(contacts);
     if (parsedContacts) {
-       this.setState({contacts: parsedContacts})
+      setContacts(parsedContacts);
     }
-   }
+   }, [setContacts]);
   
-  componentDidUpdate(prevProps, prevState) {
-    // Вызывается после каждого обновления
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-  
-    render() {
-        const { filter } = this.state;
-        const visibleContacts = this.getVisibleContact();
+  useEffect(() => {
+    // в классах это componentDidUpdate
+    window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-        return (
-            <SectionPhonebook>
-                <h1>Phonebook</h1>
-                <ContactForm onSubmit={ this.addContact} />
-                <h2>Contacts</h2>
-                <Filter value={filter} onChange={this.onChangeFilter } />
-                <ContactList contacts={visibleContacts} onDeleteContact={this.deleteContact} />        
-            </SectionPhonebook>)        
-    };
+  return (
+    <SectionPhonebook>
+      <h1>Phonebook</h1>
+      <ContactForm onSubmit={addContact} />
+      <h2>Contacts</h2>
+      <Filter value={filter} onChange={onChangeFilter} />
+      <ContactList contacts={getVisibleContact()} onDeleteContact={deleteContact} />
+    </SectionPhonebook>);        
+ 
 };
 
 const SectionPhonebook = styled.div`
@@ -97,4 +90,3 @@ const SectionPhonebook = styled.div`
     background-color: rgb(250,240,230);`;
 
 
-export default Phonebook;

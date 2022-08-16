@@ -1,7 +1,9 @@
 import Phonebook from './Phonebook';
 
 export const App = () => {
-  return (
+  return (<>
+    <h1>GHb</h1>
     <Phonebook />
+    </>
   );
 };

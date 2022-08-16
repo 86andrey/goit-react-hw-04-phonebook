@@ -10,11 +10,11 @@ export default function ContactForm({onSubmit}) {
     const onInputNameChange = e => {
         setName(e.currentTarget.value);
     };
+
     const onInputNumberChange = e => {
         setNumber(e.currentTarget.value);
     };
-  
-
+    
     const onSubmitForm = e => {
         e.preventDefault();
         onSubmit({name, number});
