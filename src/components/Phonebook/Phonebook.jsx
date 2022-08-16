@@ -16,7 +16,6 @@ export default function Phonebook() {
     const isContact = contacts.find(contact => contact.name === name);
     if (isContact) {
       alert(`${name} is already in contact`);
-      // try with ternarnuy operator
       setContacts(contacts);
     } else {
       setContacts([
@@ -30,9 +29,8 @@ export default function Phonebook() {
   };
 
   const deleteContact = (contactId) => {
-      // just make with contact
-      setContacts(prevContacts => (
-        prevContacts.filter(contact => contact.id !== contactId)
+      setContacts(contacts => (
+        contacts.filter(contact => contact.id !== contactId)
       ));
     }; 
 
@@ -42,16 +40,8 @@ export default function Phonebook() {
 
     const getVisibleContact = () => {
         const normalizedFilter = filter.toLowerCase();
-      return contacts
-      .map(
-        contact =>
-          contact.name.toLowerCase().includes(normalizedFilter) && contact
-      )
-      .filter(contact => contact !== false);
-      
-      
-      // contacts.filter(contact =>
-      //       contact.name.toLowerCase().includes(normalizedFilter));
+      return contacts.filter(contact =>
+            contact.name.toLowerCase().includes(normalizedFilter));     
   };
   
  useEffect(() => {
